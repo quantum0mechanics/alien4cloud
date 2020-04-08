@@ -1,0 +1,14 @@
+language: java
+jdk:
+  - openjdk8
+
+before_script:
+  - git clone --depth 3 https://github.com/TestingResearchIllinois/NonDex; cd NonDex; git checkout e7fce411; mvn install -Dlicense.skip -Dcheckstyle.skip -Drat.skip -Denforcer.skip -Danimal.sniffer.skip -Dmaven.javadoc.skip -Dfindbugs.skip -Dwarbucks.skip -Dmodernizer.skip -Dimpsort.skip -Dmdep.analyze.skip -Dpgpverify.skip -Dxml.skip -DskipTests -fn; cd ..
+  - git fetch --depth 1 origin master:master
+  - if [[ -z $TRAVIS_COMMIT_RANGE ]]; then TRAVIS_COMMIT_RANGE=$(git rev-parse develop)...$(git rev-parse HEAD); fi
+  - testclasses=$(git diff --name-status $TRAVIS_COMMIT_RANGE | grep /test/ | rev | sed 's;/avaj/tset.*$;;' | rev | sed -e 's/.java$//' -e 's;/;.;g' | paste -sd,)
+  - echo testclasses=$testclasses
+
+script:
+  - if [[ ! -z $testclasses ]]; then mvn -B nondex:nondex -Dtest=$testclasses -Dskip.npm -Dskip.yarn -DfailIfNoTests=false -Dskip.installnodenpm -Dskip.npm -Dskip.yarn -Dlicense.skip -Dcheckstyle.skip -Drat.skip -Denforcer.skip -Danimal.sniffer.skip -Dmaven.javadoc.skip -Dfindbugs.skip -Dwarbucks.skip -Dmodernizer.skip -Dimpsort.skip -Dmdep.analyze.skip -Dpgpverify.skip -Dxml.skip -DnondexMode=ONE -DnondexRuns=10 -fn |& tee new_detect_log; fi
+  - awk "/Test results can be found/{t=0} {if(t)print} /Across all seeds/{t=1}" new_detect_log

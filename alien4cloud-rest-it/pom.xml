@@ -202,7 +202,16 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
+        <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>edu.illinois</groupId>
+        <artifactId>nondex-maven-plugin</artifactId>
+        <version>1.1.2-SNAPSHOT</version>
+      </plugin>
+    </plugins>
     </build>
 
     <profiles>
@@ -224,8 +233,8 @@
                                 <phase>pre-integration-test</phase>
                                 <configuration>
                                     <tasks>
-                                        <delete includeemptydirs="true" failonerror="false">
-                                            <fileset dir="${user.home}/.alien" includes="**/*" />
+                                        <delete failonerror="false" includeemptydirs="true">
+                                            <fileset dir="${user.home}/.alien" includes="**/*"/>
                                         </delete>
                                     </tasks>
                                 </configuration>
@@ -353,3 +362,4 @@
         </profile>
     </profiles>
 </project>
+
